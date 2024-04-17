@@ -2,11 +2,9 @@ from langchain.vectorstores.pgvector import PGVector
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
-from langchain.document_loaders import TextLoader
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.chat_models import AzureChatOpenAI
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import RetrievalQA
-from langchain.document_loaders import PyPDFLoader
+import langchain.document_loaders as document_loaders
 
 from dotenv import load_dotenv
 import os
@@ -29,19 +27,36 @@ CONNECTION_STRING = PGVector.connection_string_from_db_params(
 )
 
 
-def create_vector_from_pdf(collection_name, file_path):
+def create_vector_from_pdf(collection_name, file_path, pdf_loader, chunk_size, chunk_overlap, overwrite):
+    
+    if pdf_loader == "UnstructuredPDFLoader":
+        loader = document_loaders.UnstructuredPDFLoader(file_path)
+    if pdf_loader == "UnstructuredPDFLoader - ElementsMode":
+        loader = document_loaders.UnstructuredPDFLoader(file_path, mode="elements")
+    if pdf_loader == "PyPDFLoader":
+        loader = document_loaders.PyPDFLoader(file_path)
+    if pdf_loader == "PyPDFLoader - ExtractImages":
+        loader = document_loaders.PyPDFLoader(file_path, extract_images=True)
+    if pdf_loader == "PyPDFium2Loader":
+        loader = document_loaders.PyPDFium2Loader(file_path)
+    if pdf_loader == "PDFMinerLoader":
+        loader = document_loaders.PDFMinerLoader(file_path)
+    if pdf_loader == "PyMuPDFLoader":
+        loader = document_loaders.PyMuPDFLoader(file_path)
+    if pdf_loader == "PDFPlumberLoader":
+        loader = document_loaders.PDFPlumberLoader(file_path)     
+              
+    data = loader.load()
 
-    CR_Template_Normal = PyPDFLoader(file_path).load()
-    text_splitter_CR_Template_Normal = CharacterTextSplitter(chunk_overlap=100)
-    CR_Template_Normal_content = text_splitter_CR_Template_Normal.split_documents(CR_Template_Normal)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    docs = text_splitter.split_documents(data)
 
-    PGVector.from_documents(
-        documents=CR_Template_Normal_content, 
+    return PGVector.from_documents(
+        documents=docs, 
         embedding=embeddings, 
         collection_name=collection_name,
         connection_string=CONNECTION_STRING,
-        pre_delete_collection=True,)
-
+        pre_delete_collection=overwrite,)
 
 def get_response_from_query(collection_name, query, openai_model_name="gpt-3.5-turbo"):
     
