@@ -5,7 +5,8 @@ TODO: Give a short introduction of your project. Let this section explain the ob
 # Getting Started
 
 Requisitos: Python 3.9.2
-Para instalação: py -3.9 -m pip install -r requirements.txt
+Instalar Tesseract: https://github.com/UB-Mannheim/tesseract/wiki
+Para instalação de requirements: py -3.9 -m pip install -r requirements.txt
 
 # Build and Test
 
