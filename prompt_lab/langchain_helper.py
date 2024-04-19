@@ -27,7 +27,8 @@ from pydantic import BaseModel, Field
 import pytesseract
 import layoutparser as lp
 from langchain import hub
-pytesseract.pytesseract.tesseract_cmd = r"C:\Users\LucasBreder\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"  
+import streamlit as st
+# pytesseract.pytesseract.tesseract_cmd = r"C:\Users\LucasBreder\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" // somente localmente  
 
 
 from dotenv import load_dotenv
@@ -35,19 +36,29 @@ import os
 
 load_dotenv()
 
-openai_api_key = os.getenv("OPENAI_API_KEY")
+# openai_api_key = os.getenv("OPENAI_API_KEY")
+openai_api_key = st.secrets["OPENAI_API_KEY"]
 
 embeddings = OpenAIEmbeddings(
     openai_api_key=openai_api_key
 )
 
+# CONNECTION_STRING = PGVector.connection_string_from_db_params(
+#         driver=os.getenv("PGVECTOR_DRIVER"),
+#         host=os.getenv("PGVECTOR_HOST"),
+#         port=int(os.getenv("PGVECTOR_PORT")),
+#         database=os.getenv("PGVECTOR_DATABASE"),
+#         user=os.getenv("PGVECTOR_USER"),
+#         password=os.getenv("PGVECTOR_PASSWORD"),
+# )
+
 CONNECTION_STRING = PGVector.connection_string_from_db_params(
-        driver=os.getenv("PGVECTOR_DRIVER"),
-        host=os.getenv("PGVECTOR_HOST"),
-        port=int(os.getenv("PGVECTOR_PORT")),
-        database=os.getenv("PGVECTOR_DATABASE"),
-        user=os.getenv("PGVECTOR_USER"),
-        password=os.getenv("PGVECTOR_PASSWORD"),
+        driver=st.secrets["PGVECTOR_DRIVER"],
+        host=st.secrets["PGVECTOR_HOST"],
+        port=int(st.secrets["PGVECTOR_PORT"]),
+        database=st.secrets["PGVECTOR_DATABASE"],
+        user=st.secrets["PGVECTOR_USER"],
+        password=st.secrets["PGVECTOR_PASSWORD"],
 )
 
 def load_pdf(file_path, pdf_loader, dpi):

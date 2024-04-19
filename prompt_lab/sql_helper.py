@@ -1,12 +1,20 @@
 import psycopg2
 import psycopg2.extras
 import os
+import streamlit as st
 
-conn = psycopg2.connect( database=os.getenv("PGVECTOR_DATABASE"),
-                            host=os.getenv("PGVECTOR_HOST"),
-                            user=os.getenv("PGVECTOR_USER"),
-                            password=os.getenv("PGVECTOR_PASSWORD"),
-                            port=int(os.getenv("PGVECTOR_PORT")))
+# conn = psycopg2.connect( database=os.getenv("PGVECTOR_DATABASE"),
+#                             host=os.getenv("PGVECTOR_HOST"),
+#                             user=os.getenv("PGVECTOR_USER"),
+#                             password=os.getenv("PGVECTOR_PASSWORD"),
+#                             port=int(os.getenv("PGVECTOR_PORT")))
+# cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+conn = psycopg2.connect( database=st.secrets["PGVECTOR_DATABASE"],
+                            host=st.secrets["PGVECTOR_HOST"],
+                            user=st.secrets["PGVECTOR_USER"],
+                            password=st.secrets["PGVECTOR_PASSWORD"],
+                            port=int(st.secrets["PGVECTOR_PORT"]))
 cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
