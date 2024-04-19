@@ -24,3 +24,5 @@ poppler-utils==0.1.0
 layoutparser==0.3.4
 pytesseract==0.3.10
 langchainhub==0.1.15
+tesseract-ocr
+tesseract-ocr-por
